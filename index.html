@@ -45,6 +45,7 @@
             cursor: pointer;
             font-size: 16px;
             border-radius: 5px;
+            margin: 5px;
         }
         button:hover {
             background-color: #45a049;
@@ -73,6 +74,7 @@
         <label for="password">Enter your password:</label>
         <input type="password" id="password" placeholder="Enter password">
         <button onclick="checkPassword()">Check Strength</button>
+        <button onclick="generatePassword()">Generate Strong Password</button>
         <div id="strength" class="strength-meter">Strength: 0/5</div>
         <div class="guidelines">
             <p>Guidelines for a strong password:</p>
@@ -112,10 +114,9 @@
             if (!COMMON_PASSWORDS.has(password)) score++;
             else feedback.push("Weak: Password is too common. Choose a more unique password.");
 
-            // Display strength and feedback
             const strengthDiv = document.getElementById('strength');
             strengthDiv.textContent = `Strength: ${score}/5`;
-            
+
             if (score === 5) {
                 strengthDiv.className = 'strength-meter strong';
                 alert("Strong: Your password is strong!");
@@ -126,6 +127,17 @@
                 strengthDiv.className = 'strength-meter weak';
                 alert(feedback.join("\n"));
             }
+        }
+
+        function generatePassword() {
+            const length = 12;
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:',.<>?";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            document.getElementById('password').value = password;
+            alert("Generated password: " + password);
         }
     </script>
 </body>
