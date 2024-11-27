@@ -19,22 +19,23 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             padding: 20px;
-            overflow: hidden;
+            overflow-x: hidden;
         }
         
         .container {
             background: #ffffff;
-            padding: 30px;
+            padding: 20px;
             border-radius: 20px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
             text-align: center;
-            max-width: 500px;
             width: 100%;
+            max-width: 500px;
             position: relative;
             animation: fadeIn 1s ease-in-out;
+            overflow: auto;
         }
         
         @keyframes fadeIn {
@@ -50,7 +51,7 @@
         
         h1 {
             color: #34495e;
-            font-size: 28px;
+            font-size: 24px;
             margin-bottom: 20px;
             font-weight: 600;
         }
@@ -75,11 +76,11 @@
             background-color: #5a9bd5;
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 10px 15px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             border-radius: 10px;
-            margin: 10px 5px;
+            margin: 5px;
             transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
         }
         
@@ -90,9 +91,9 @@
         }
         
         .strength-meter {
-            font-size: 18px;
-            margin-top: 20px;
-            padding: 12px;
+            font-size: 16px;
+            margin-top: 15px;
+            padding: 10px;
             border-radius: 10px;
             color: white;
             text-align: center;
@@ -115,8 +116,8 @@
         }
         
         .feedback {
-            margin-top: 20px;
-            font-size: 16px;
+            margin-top: 15px;
+            font-size: 14px;
             color: #478ac9;
             font-weight: bold;
         }
@@ -148,23 +149,23 @@
         
         .quiz-section {
             margin-top: 20px;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 15px;
+            border-radius: 10px;
             background-color: #f8f9fa;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             display: none;
         }
         
         .quiz-question {
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 16px;
+            margin-bottom: 10px;
             color: #34495e;
             font-weight: 600;
         }
         
         .quiz-option {
             background-color: #dcdde1;
-            padding: 12px;
+            padding: 10px;
             border-radius: 10px;
             margin: 10px 0;
             cursor: pointer;
@@ -181,6 +182,33 @@
             margin-top: 10px;
             font-weight: bold;
             color: #e74c3c;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                height: auto;
+                overflow-y: auto;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            input,
+            button {
+                font-size: 14px;
+                padding: 10px;
+            }
+            .strength-meter {
+                font-size: 14px;
+                padding: 8px;
+            }
+            .quiz-question {
+                font-size: 14px;
+            }
+            .quiz-option {
+                font-size: 14px;
+                padding: 8px;
+            }
         }
     </style>
 </head>
@@ -209,9 +237,6 @@
             <div id="quiz-options"></div>
             <div id="quiz-feedback" class="quiz-feedback"></div>
         </div>
-
-        <!-- Animated Character -->
-        <div class="character"></div>
     </div>
 
     <script>
@@ -236,25 +261,7 @@
             question: "Is 'password123' a strong password?",
             options: ["Yes", "No"],
             answer: "No"
-        }, {
-            question: "What does MFA stand for?",
-            options: ["More Fast Access", "Multi-Factor Authentication", "Main File Access"],
-            answer: "Multi-Factor Authentication"
-        }, {
-            question: "Which is a common method for hacking passwords?",
-            options: ["Brute Force Attack", "Deep Learning", "File Copying"],
-            answer: "Brute Force Attack"
-        }, {
-            question: "What should you never share online?",
-            options: ["Pet's Name", "Password", "Favorite Color"],
-            answer: "Password"
-        }, {
-            question: "What's an example of a strong password?",
-            options: ["abc123", "JohnDoe1990", "R$6v&8u#x"],
-            answer: "R$6v&8u#x"
         }, ];
-
-
 
         function checkPassword() {
             const password = document.getElementById('password').value;
@@ -262,22 +269,11 @@
             let feedbackMessage = '';
 
             if (password.length >= 12) score++;
-            else feedbackMessage += 'Weak: At least 12 characters required. ';
-
             if (/[A-Z]/.test(password)) score++;
-            else feedbackMessage += 'Add uppercase letters. ';
-
             if (/[a-z]/.test(password)) score++;
-            else feedbackMessage += 'Add lowercase letters. ';
-
             if (/[0-9]/.test(password)) score++;
-            else feedbackMessage += 'Add numbers. ';
-
             if (/[!@#$%^&*(),.?\":{}|<>]/.test(password)) score++;
-            else feedbackMessage += 'Add special characters. ';
-
             if (!COMMON_PASSWORDS.has(password)) score++;
-            else feedbackMessage += 'Avoid common passwords. ';
 
             const strengthDiv = document.getElementById('strength');
             strengthDiv.textContent = `Strength: ${score}/6`;
@@ -287,8 +283,10 @@
                 feedbackMessage = 'Your password is very strong! 💪';
             } else if (score >= 4) {
                 strengthDiv.className = 'strength-meter medium';
+                feedbackMessage = 'Your password is medium. Add more complexity.';
             } else {
                 strengthDiv.className = 'strength-meter weak';
+                feedbackMessage = 'Your password is weak. Follow guidelines above.';
             }
 
             document.getElementById('feedback').textContent = feedbackMessage;
