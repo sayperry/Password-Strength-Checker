@@ -6,157 +6,187 @@
     <title>Password Strength Checker</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #e0f7fa;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
             text-align: center;
-            margin-top: 50px;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .container {
             width: 400px;
-            margin: 0 auto;
             background-color: #ffffff;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .container:hover {
+            transform: scale(1.02);
         }
         h1 {
-            color: #00796b;
-            font-size: 24px;
+            color: #2d3e50;
+            font-size: 28px;
+            margin-bottom: 20px;
         }
         label {
-            color: #004d40;
+            color: #34495e;
             font-size: 16px;
             display: block;
             margin-bottom: 10px;
         }
         input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
         }
         button {
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             cursor: pointer;
             font-size: 16px;
-            border-radius: 5px;
+            border-radius: 8px;
             margin: 5px;
+            transition: background-color 0.3s, transform 0.2s;
         }
         button:hover {
             background-color: #45a049;
+            transform: scale(1.05);
         }
         .strength-meter {
             font-size: 16px;
             margin-top: 20px;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 8px;
             color: white;
             text-align: center;
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
-        .weak { background-color: red; }
-        .medium { background-color: yellow; color: black; }
-        .strong { background-color: green; }
+        .weak { background-color: #e74c3c; box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); }
+        .medium { background-color: #f1c40f; color: #2d3e50; box-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+        .strong { background-color: #27ae60; box-shadow: 0 0 10px rgba(39, 174, 96, 0.5); }
         .guidelines {
             font-size: 14px;
             margin-top: 20px;
-            color: #004d40;
+            color: #34495e;
+            line-height: 1.6;
+        }
+        .guidelines p {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+        ul li::before {
+            content: "✔";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .password-message {
+            font-size: 14px;
+            margin-top: 10px;
+            color: #d35400;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Password Strength Checker</h1>
+    <div class="container fade-in">
+        <h1>Password Strength Checker 🔒</h1>
         <label for="password">Enter your password:</label>
         <input type="password" id="password" placeholder="Enter password">
         <button onclick="checkPassword()">Check Strength</button>
         <button onclick="generatePassword()">Generate Strong Password</button>
-        <div id="strength" class="strength-meter">Strength: 0/5</div>
+        <div id="strength" class="strength-meter">Strength: 0/6</div>
         <div class="guidelines">
             <p>Guidelines for a strong password:</p>
-            <ul style="list-style-type:none; padding:0;">
-                <li>- At least 12 characters</li>
-                <li>- Mix of letters, numbers, and symbols</li>
-                <li>- Avoid common passwords</li>
+            <ul>
+                <li>At least 12 characters</li>
+                <li>Mix of letters, numbers, and symbols</li>
+                <li>Avoid common passwords</li>
             </ul>
         </div>
+        <div id="message" class="password-message"></div>
     </div>
 
     <script>
-        const COMMON_PASSWORDS = new Set([
-            "password", "123456", "1234567", "12345678", "12345", "1234", "123", "1q2w3e4r", "qwertyuiop", 
-            "iloveyou", "111111", "123321", "abc123456", "password123", "qwerty123", "letmein1", "welcome1", 
-            "admin123", "monkey", "sunshine", "123123", "qwerty1", "football", "princess", "qazwsx", "123qwe", 
-            "1qaz2wsx", "password!", "trustno1", "1234567890", "zxcvbnm", "zxcvbn123", "letmein123"
-        ]);
+        const COMMON_PASSWORDS = new Set(["password", "123456", "1234567", "qwerty", "iloveyou", "111111", "abc123"]);
 
         function checkPassword() {
             const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
             let score = 0;
             let feedback = [];
 
             if (password.length >= 12) score++;
-            else feedback.push("Weak: Password must be at least 12 characters long.");
+            else feedback.push("Weak: At least 12 characters.");
 
             if (/[A-Z]/.test(password)) score++;
-            else feedback.push("Weak: Password must contain uppercase letters.");
+            else feedback.push("Weak: Include uppercase letters.");
 
             if (/[a-z]/.test(password)) score++;
-            else feedback.push("Weak: Password must contain lowercase letters.");
+            else feedback.push("Weak: Include lowercase letters.");
 
             if (/[0-9]/.test(password)) score++;
-            else feedback.push("Weak: Password must contain numbers.");
+            else feedback.push("Weak: Add numbers.");
 
             if (/[!@#$%^&*(),.?\":{}|<>]/.test(password)) score++;
-            else feedback.push("Weak: Password must contain special characters.");
+            else feedback.push("Weak: Add special characters.");
 
             if (!COMMON_PASSWORDS.has(password)) score++;
-            else feedback.push("Weak: Password is too common. Choose a more unique password.");
+            else feedback.push("Weak: Avoid common passwords.");
 
             const strengthDiv = document.getElementById('strength');
             strengthDiv.textContent = `Strength: ${score}/6`;
 
             if (score === 6) {
                 strengthDiv.className = 'strength-meter strong';
-                alert("Strong: Your password is strong!");
+                messageDiv.textContent = "Your password is strong! 💪";
             } else if (score >= 4) {
                 strengthDiv.className = 'strength-meter medium';
-                alert(feedback.join("\n"));
+                messageDiv.textContent = feedback.join(" ");
             } else {
                 strengthDiv.className = 'strength-meter weak';
-                alert(feedback.join("\n"));
+                messageDiv.textContent = feedback.join(" ");
             }
         }
 
         function generatePassword() {
-            const length = 12;
-            const charsetLower = "abcdefghijklmnopqrstuvwxyz";
-            const charsetUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            const charsetNumbers = "0123456789";
-            const charsetSpecial = "!@#$%^&*()_+[]{}|;:',.<>?";
-            const allCharset = charsetLower + charsetUpper + charsetNumbers + charsetSpecial;
-            
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:',.<>?";
             let password = "";
-            // Ensure the password includes at least one of each type
-            password += charsetLower.charAt(Math.floor(Math.random() * charsetLower.length));
-            password += charsetUpper.charAt(Math.floor(Math.random() * charsetUpper.length));
-            password += charsetNumbers.charAt(Math.floor(Math.random() * charsetNumbers.length));
-            password += charsetSpecial.charAt(Math.floor(Math.random() * charsetSpecial.length));
-
-            // Fill the rest of the password length
-            for (let i = 4; i < length; i++) {
-                password += allCharset.charAt(Math.floor(Math.random() * allCharset.length));
+            for (let i = 0; i < 12; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
             }
-
-            // Shuffle the password to avoid predictable patterns
-            password = password.split('').sort(() => 0.5 - Math.random()).join('');
-
             document.getElementById('password').value = password;
-            alert("Generated strong password: " + password);
+            document.getElementById('message').textContent = "Generated password: " + password;
         }
     </script>
 </body>
