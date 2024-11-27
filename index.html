@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .container {
+            width: 400px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #00796b;
+            font-size: 24px;
+        }
+        label {
+            color: #004d40;
+            font-size: 16px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .strength-meter {
+            font-size: 16px;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            text-align: center;
+        }
+        .weak { background-color: red; }
+        .medium { background-color: yellow; color: black; }
+        .strong { background-color: green; }
+        .guidelines {
+            font-size: 14px;
+            margin-top: 20px;
+            color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Password Strength Checker</h1>
+        <label for="password">Enter your password:</label>
+        <input type="password" id="password" placeholder="Enter password">
+        <button onclick="checkPassword()">Check Strength</button>
+        <div id="strength" class="strength-meter">Strength: 0/5</div>
+        <div class="guidelines">
+            <p>Guidelines for a strong password:</p>
+            <ul style="list-style-type:none; padding:0;">
+                <li>- At least 8 characters</li>
+                <li>- Mix of letters, numbers, and symbols</li>
+                <li>- Avoid common passwords</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const COMMON_PASSWORDS = new Set([
+            "password", "123456", "1234567", "12345678", "12345", "1234", "123", "1q2w3e4r", "qwertyuiop", 
+            "iloveyou", "111111", "123321", "abc123456", "password123", "qwerty123", "letmein1", "welcome1", 
+            "admin123", "monkey", "sunshine", "123123", "qwerty1", "football", "princess", "qazwsx", "123qwe", 
+            "1qaz2wsx", "password!", "trustno1", "1234567890", "zxcvbnm", "zxcvbn123", "letmein123"
+        ]);
+
+        function checkPassword() {
+            const password = document.getElementById('password').value;
+            let score = 0;
+            let feedback = [];
+
+            if (password.length >= 8) score++;
+            else feedback.push("Weak: Password must be at least 8 characters long.");
+
+            if (/[A-Za-z]/.test(password)) score++;
+            else feedback.push("Weak: Password must contain letters.");
+
+            if (/[0-9]/.test(password)) score++;
+            else feedback.push("Weak: Password must contain numbers.");
+
+            if (/[!@#$%^&*(),.?\":{}|<>]/.test(password)) score++;
+            else feedback.push("Weak: Password must contain special characters.");
+
+            if (!COMMON_PASSWORDS.has(password)) score++;
+            else feedback.push("Weak: Password is too common. Choose a more unique password.");
+
+            // Display strength and feedback
+            const strengthDiv = document.getElementById('strength');
+            strengthDiv.textContent = `Strength: ${score}/5`;
+            
+            if (score === 5) {
+                strengthDiv.className = 'strength-meter strong';
+                alert("Strong: Your password is strong!");
+            } else if (score >= 3) {
+                strengthDiv.className = 'strength-meter medium';
+                alert(feedback.join("\n"));
+            } else {
+                strengthDiv.className = 'strength-meter weak';
+                alert(feedback.join("\n"));
+            }
+        }
+    </script>
+</body>
+</html>
