@@ -79,7 +79,7 @@
         <div class="guidelines">
             <p>Guidelines for a strong password:</p>
             <ul style="list-style-type:none; padding:0;">
-                <li>- At least 8 characters</li>
+                <li>- At least 12 characters</li>
                 <li>- Mix of letters, numbers, and symbols</li>
                 <li>- Avoid common passwords</li>
             </ul>
@@ -99,11 +99,14 @@
             let score = 0;
             let feedback = [];
 
-            if (password.length >= 8) score++;
-            else feedback.push("Weak: Password must be at least 8 characters long.");
+            if (password.length >= 12) score++;
+            else feedback.push("Weak: Password must be at least 12 characters long.");
 
-            if (/[A-Za-z]/.test(password)) score++;
-            else feedback.push("Weak: Password must contain letters.");
+            if (/[A-Z]/.test(password)) score++;
+            else feedback.push("Weak: Password must contain uppercase letters.");
+
+            if (/[a-z]/.test(password)) score++;
+            else feedback.push("Weak: Password must contain lowercase letters.");
 
             if (/[0-9]/.test(password)) score++;
             else feedback.push("Weak: Password must contain numbers.");
@@ -115,12 +118,12 @@
             else feedback.push("Weak: Password is too common. Choose a more unique password.");
 
             const strengthDiv = document.getElementById('strength');
-            strengthDiv.textContent = `Strength: ${score}/5`;
+            strengthDiv.textContent = `Strength: ${score}/6`;
 
-            if (score === 5) {
+            if (score === 6) {
                 strengthDiv.className = 'strength-meter strong';
                 alert("Strong: Your password is strong!");
-            } else if (score >= 3) {
+            } else if (score >= 4) {
                 strengthDiv.className = 'strength-meter medium';
                 alert(feedback.join("\n"));
             } else {
@@ -131,13 +134,29 @@
 
         function generatePassword() {
             const length = 12;
-            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:',.<>?";
+            const charsetLower = "abcdefghijklmnopqrstuvwxyz";
+            const charsetUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const charsetNumbers = "0123456789";
+            const charsetSpecial = "!@#$%^&*()_+[]{}|;:',.<>?";
+            const allCharset = charsetLower + charsetUpper + charsetNumbers + charsetSpecial;
+            
             let password = "";
-            for (let i = 0; i < length; i++) {
-                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            // Ensure the password includes at least one of each type
+            password += charsetLower.charAt(Math.floor(Math.random() * charsetLower.length));
+            password += charsetUpper.charAt(Math.floor(Math.random() * charsetUpper.length));
+            password += charsetNumbers.charAt(Math.floor(Math.random() * charsetNumbers.length));
+            password += charsetSpecial.charAt(Math.floor(Math.random() * charsetSpecial.length));
+
+            // Fill the rest of the password length
+            for (let i = 4; i < length; i++) {
+                password += allCharset.charAt(Math.floor(Math.random() * allCharset.length));
             }
+
+            // Shuffle the password to avoid predictable patterns
+            password = password.split('').sort(() => 0.5 - Math.random()).join('');
+
             document.getElementById('password').value = password;
-            alert("Generated password: " + password);
+            alert("Generated strong password: " + password);
         }
     </script>
 </body>
