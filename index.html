@@ -1,182 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Strength Checker</title>
+    <title>Password Strength Checker with Quiz</title>
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f4f8;
-            text-align: center;
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
         }
+        
         .container {
-            width: 400px;
-            background-color: #ffffff;
+            background: #ffffff;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            animation: fadeIn 1s ease-in-out;
         }
-        .container:hover {
-            transform: scale(1.02);
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+        
         h1 {
-            color: #2d3e50;
+            color: #34495e;
             font-size: 28px;
             margin-bottom: 20px;
+            font-weight: 600;
         }
-        label {
-            color: #34495e;
-            font-size: 16px;
-            display: block;
-            margin-bottom: 10px;
-        }
+        
         input {
             width: 100%;
             padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            margin: 15px 0;
+            border: 2px solid #ccc;
+            border-radius: 10px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
+        
         input:focus {
-            border-color: #4CAF50;
+            border-color: #5a9bd5;
             outline: none;
-            box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+            box-shadow: 0 0 12px rgba(90, 155, 213, 0.3);
         }
+        
         button {
-            background-color: #4CAF50;
+            background-color: #5a9bd5;
             color: white;
             border: none;
             padding: 12px 20px;
             cursor: pointer;
             font-size: 16px;
-            border-radius: 8px;
-            margin: 5px;
-            transition: background-color 0.3s, transform 0.2s;
+            border-radius: 10px;
+            margin: 10px 5px;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
         }
+        
         button:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
+            background-color: #478ac9;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(71, 138, 201, 0.4);
         }
+        
         .strength-meter {
-            font-size: 16px;
+            font-size: 18px;
             margin-top: 20px;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             color: white;
             text-align: center;
             transition: background-color 0.3s, box-shadow 0.3s;
         }
-        .weak { background-color: #e74c3c; box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); }
-        .medium { background-color: #f1c40f; color: #2d3e50; box-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
-        .strong { background-color: #27ae60; box-shadow: 0 0 10px rgba(39, 174, 96, 0.5); }
+        
+        .weak {
+            background-color: #e74c3c;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.6);
+        }
+        
+        .medium {
+            background-color: #f39c12;
+            box-shadow: 0 0 15px rgba(243, 156, 18, 0.6);
+        }
+        
+        .strong {
+            background-color: #27ae60;
+            box-shadow: 0 0 15px rgba(39, 174, 96, 0.6);
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #478ac9;
+            font-weight: bold;
+        }
+        
         .guidelines {
             font-size: 14px;
             margin-top: 20px;
             color: #34495e;
-            line-height: 1.6;
+            text-align: left;
         }
+        
         .guidelines p {
             font-weight: bold;
             margin-bottom: 8px;
         }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        ul li {
-            margin: 5px 0;
+        
+        .guidelines li {
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
         }
-        ul li::before {
+        
+        .guidelines li::before {
             content: "✔";
             color: #27ae60;
             font-weight: bold;
             margin-right: 8px;
         }
-        .password-message {
-            font-size: 14px;
+        
+        .quiz-section {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            background-color: #f8f9fa;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .quiz-question {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #34495e;
+            font-weight: 600;
+        }
+        
+        .quiz-option {
+            background-color: #dcdde1;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .quiz-option:hover {
+            background-color: #5a9bd5;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .quiz-feedback {
             margin-top: 10px;
-            color: #d35400;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in {
-            animation: fadeIn 0.8s ease-out;
+            font-weight: bold;
+            color: #e74c3c;
         }
     </style>
 </head>
+
 <body>
-    <div class="container fade-in">
+    <div class="container">
         <h1>Password Strength Checker 🔒</h1>
-        <label for="password">Enter your password:</label>
-        <input type="password" id="password" placeholder="Enter password">
+        <input type="password" id="password" placeholder="Enter your password">
         <button onclick="checkPassword()">Check Strength</button>
         <button onclick="generatePassword()">Generate Strong Password</button>
+        <button onclick="startQuiz()">Play Security Quiz 🎮</button>
         <div id="strength" class="strength-meter">Strength: 0/6</div>
+        <div id="feedback" class="feedback"></div>
+
         <div class="guidelines">
             <p>Guidelines for a strong password:</p>
             <ul>
                 <li>At least 12 characters</li>
-                <li>Mix of letters, numbers, and symbols</li>
-                <li>Avoid common passwords</li>
+                <li>Mix of uppercase, lowercase, numbers, and symbols</li>
+                <li>Avoid common words or patterns</li>
             </ul>
         </div>
-        <div id="message" class="password-message"></div>
+
+        <div id="quiz-section" class="quiz-section">
+            <div id="quiz-question" class="quiz-question"></div>
+            <div id="quiz-options"></div>
+            <div id="quiz-feedback" class="quiz-feedback"></div>
+        </div>
+
+        <!-- Animated Character -->
+        <div class="character"></div>
     </div>
 
     <script>
-        const COMMON_PASSWORDS = new Set(["password", "123456", "1234567", "qwerty", "iloveyou", "111111", "abc123"]);
+        const COMMON_PASSWORDS = new Set(["password", "123456", "12345678", "qwerty", "iloveyou", "111111", "abc123"]);
+        const quizData = [{
+            question: "What is the recommended minimum length for a strong password?",
+            options: ["8 characters", "12 characters", "6 characters"],
+            answer: "12 characters"
+        }, {
+            question: "Which of these is the weakest password?",
+            options: ["P@ssw0rd!", "123456", "Qwer@1234"],
+            answer: "123456"
+        }, {
+            question: "Why should you avoid using personal information in passwords?",
+            options: ["It's easy to forget", "Hackers can guess it", "It's too long"],
+            answer: "Hackers can guess it"
+        }, {
+            question: "Which symbol improves password strength?",
+            options: ["@", "&", "All of these"],
+            answer: "All of these"
+        }, {
+            question: "Is 'password123' a strong password?",
+            options: ["Yes", "No"],
+            answer: "No"
+        }, {
+            question: "What does MFA stand for?",
+            options: ["More Fast Access", "Multi-Factor Authentication", "Main File Access"],
+            answer: "Multi-Factor Authentication"
+        }, {
+            question: "Which is a common method for hacking passwords?",
+            options: ["Brute Force Attack", "Deep Learning", "File Copying"],
+            answer: "Brute Force Attack"
+        }, {
+            question: "What should you never share online?",
+            options: ["Pet's Name", "Password", "Favorite Color"],
+            answer: "Password"
+        }, {
+            question: "What's an example of a strong password?",
+            options: ["abc123", "JohnDoe1990", "R$6v&8u#x"],
+            answer: "R$6v&8u#x"
+        }, ];
+
+
 
         function checkPassword() {
             const password = document.getElementById('password').value;
-            const messageDiv = document.getElementById('message');
             let score = 0;
-            let feedback = [];
+            let feedbackMessage = '';
 
             if (password.length >= 12) score++;
-            else feedback.push("Weak: At least 12 characters.");
+            else feedbackMessage += 'Weak: At least 12 characters required. ';
 
             if (/[A-Z]/.test(password)) score++;
-            else feedback.push("Weak: Include uppercase letters.");
+            else feedbackMessage += 'Add uppercase letters. ';
 
             if (/[a-z]/.test(password)) score++;
-            else feedback.push("Weak: Include lowercase letters.");
+            else feedbackMessage += 'Add lowercase letters. ';
 
             if (/[0-9]/.test(password)) score++;
-            else feedback.push("Weak: Add numbers.");
+            else feedbackMessage += 'Add numbers. ';
 
             if (/[!@#$%^&*(),.?\":{}|<>]/.test(password)) score++;
-            else feedback.push("Weak: Add special characters.");
+            else feedbackMessage += 'Add special characters. ';
 
             if (!COMMON_PASSWORDS.has(password)) score++;
-            else feedback.push("Weak: Avoid common passwords.");
+            else feedbackMessage += 'Avoid common passwords. ';
 
             const strengthDiv = document.getElementById('strength');
             strengthDiv.textContent = `Strength: ${score}/6`;
 
             if (score === 6) {
                 strengthDiv.className = 'strength-meter strong';
-                messageDiv.textContent = "Your password is strong! 💪";
+                feedbackMessage = 'Your password is very strong! 💪';
             } else if (score >= 4) {
                 strengthDiv.className = 'strength-meter medium';
-                messageDiv.textContent = feedback.join(" ");
             } else {
                 strengthDiv.className = 'strength-meter weak';
-                messageDiv.textContent = feedback.join(" ");
             }
+
+            document.getElementById('feedback').textContent = feedbackMessage;
         }
 
         function generatePassword() {
@@ -186,8 +301,57 @@
                 password += charset.charAt(Math.floor(Math.random() * charset.length));
             }
             document.getElementById('password').value = password;
-            document.getElementById('message').textContent = "Generated password: " + password;
+            document.getElementById('feedback').textContent = "Generated password: " + password;
+        }
+
+        let currentQuiz = 0;
+        let score = 0;
+
+        function startQuiz() {
+            document.getElementById('quiz-section').style.display = 'block';
+            loadQuiz();
+        }
+
+        function loadQuiz() {
+            const quiz = quizData[currentQuiz];
+            document.getElementById('quiz-question').textContent = quiz.question;
+            const optionsDiv = document.getElementById('quiz-options');
+            optionsDiv.innerHTML = '';
+
+            quiz.options.forEach(option => {
+                const optionElem = document.createElement('div');
+                optionElem.className = 'quiz-option';
+                optionElem.textContent = option;
+                optionElem.onclick = () => checkAnswer(option);
+                optionsDiv.appendChild(optionElem);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const feedbackDiv = document.getElementById('quiz-feedback');
+            if (selectedOption === quizData[currentQuiz].answer) {
+                score++;
+                feedbackDiv.textContent = "Correct! 🎉";
+                feedbackDiv.style.color = 'green';
+            } else {
+                feedbackDiv.textContent = "Incorrect. Try again! 😞";
+                feedbackDiv.style.color = 'red';
+            }
+
+            currentQuiz++;
+            setTimeout(() => {
+                feedbackDiv.textContent = '';
+                if (currentQuiz < quizData.length) {
+                    loadQuiz();
+                } else {
+                    document.getElementById('quiz-section').style.display = 'none';
+                    document.getElementById('feedback').textContent = `Quiz over! Your score: ${score}/${quizData.length}`;
+                    currentQuiz = 0;
+                    score = 0;
+                }
+            }, 1000);
         }
     </script>
 </body>
+
 </html>
