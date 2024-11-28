@@ -183,33 +183,6 @@
             font-weight: bold;
             color: #e74c3c;
         }
-        
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-                height: auto;
-                overflow-y: auto;
-            }
-            h1 {
-                font-size: 20px;
-            }
-            input,
-            button {
-                font-size: 14px;
-                padding: 10px;
-            }
-            .strength-meter {
-                font-size: 14px;
-                padding: 8px;
-            }
-            .quiz-question {
-                font-size: 14px;
-            }
-            .quiz-option {
-                font-size: 14px;
-                padding: 8px;
-            }
-        }
     </style>
 </head>
 
@@ -240,6 +213,13 @@
     </div>
 
     <script>
+        // Input Sanitization Function
+        function sanitizeInput(input) {
+            const temp = document.createElement('div');
+            temp.textContent = input; // Escape HTML characters
+            return temp.innerHTML; // Return safe string
+        }
+
         const COMMON_PASSWORDS = new Set(["password", "123456", "12345678", "qwerty", "iloveyou", "111111", "abc123"]);
         const quizData = [{
             question: "What is the recommended minimum length for a strong password?",
@@ -261,18 +241,18 @@
             question: "Is 'password123' a strong password?",
             options: ["Yes", "No"],
             answer: "No"
-        }, ];
+        }];
 
         function checkPassword() {
-            const password = document.getElementById('password').value;
-            let score = 0;
-            let feedbackMessage = '';
+            const rawPassword = document.getElementById('password').value;
+            const password = sanitizeInput(rawPassword); // Sanitize the password
 
+            let score = 0;
             if (password.length >= 12) score++;
             if (/[A-Z]/.test(password)) score++;
             if (/[a-z]/.test(password)) score++;
             if (/[0-9]/.test(password)) score++;
-            if (/[!@#$%^&*(),.?\":{}|<>]/.test(password)) score++;
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
             if (!COMMON_PASSWORDS.has(password)) score++;
 
             const strengthDiv = document.getElementById('strength');
@@ -280,16 +260,14 @@
 
             if (score === 6) {
                 strengthDiv.className = 'strength-meter strong';
-                feedbackMessage = 'Your password is very strong! 💪';
+                document.getElementById('feedback').textContent = 'Your password is very strong! 💪';
             } else if (score >= 4) {
                 strengthDiv.className = 'strength-meter medium';
-                feedbackMessage = 'Your password is medium. Add more complexity.';
+                document.getElementById('feedback').textContent = 'Your password is medium. Add more complexity.';
             } else {
                 strengthDiv.className = 'strength-meter weak';
-                feedbackMessage = 'Your password is weak. Follow guidelines above.';
+                document.getElementById('feedback').textContent = 'Your password is weak. Follow guidelines above.';
             }
-
-            document.getElementById('feedback').textContent = feedbackMessage;
         }
 
         function generatePassword() {
@@ -298,8 +276,9 @@
             for (let i = 0; i < 12; i++) {
                 password += charset.charAt(Math.floor(Math.random() * charset.length));
             }
-            document.getElementById('password').value = password;
-            document.getElementById('feedback').textContent = "Generated password: " + password;
+
+            document.getElementById('password').value = sanitizeInput(password);
+            document.getElementById('feedback').textContent = `Your generated password is: ${password}`;
         }
 
         let currentQuiz = 0;
@@ -312,14 +291,15 @@
 
         function loadQuiz() {
             const quiz = quizData[currentQuiz];
-            document.getElementById('quiz-question').textContent = quiz.question;
+            document.getElementById('quiz-question').textContent = sanitizeInput(quiz.question);
+
             const optionsDiv = document.getElementById('quiz-options');
             optionsDiv.innerHTML = '';
 
             quiz.options.forEach(option => {
                 const optionElem = document.createElement('div');
                 optionElem.className = 'quiz-option';
-                optionElem.textContent = option;
+                optionElem.textContent = sanitizeInput(option);
                 optionElem.onclick = () => checkAnswer(option);
                 optionsDiv.appendChild(optionElem);
             });
